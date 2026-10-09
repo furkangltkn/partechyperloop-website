@@ -11,7 +11,7 @@ const dialog = $('#detail-dialog');
 function closeMenu(){ $('#mega-menu').hidden=true;$('.menu-toggle').setAttribute('aria-expanded','false'); }
 const eventGallery={images:[
  {src:'assets/event.jpg',alt:{tr:'PARTECH standında prototip üzerine yapılan görüşmeler',en:'Conversations about the prototype at the PARTECH stand'}},
- {src:'assets/event-team-2026.jpg',alt:{tr:'PARTECH standı önünde takımımız ve ziyaretçiler',en:'Our team and visitors in front of the PARTECH stand'}}
+ {src:'assets/event-team-2026-web.jpg',alt:{tr:'PARTECH standı önünde takımımız ve ziyaretçiler',en:'Our team and visitors in front of the PARTECH stand'}}
 ]};
 function carouselMarkup(item,i,modal=false,start=0,kind='achievement'){
  const ac=achievementCopy[language], img=item.images[start];
@@ -21,12 +21,43 @@ function carouselMarkup(item,i,modal=false,start=0,kind='achievement'){
  const image=`<img src="${img.src}" alt="${escape(localized(img.alt))}" loading="${modal?'eager':'lazy'}">`;
  return `<div class="photo-carousel ${modal?'modal-carousel':''}" data-carousel="${i}" data-kind="${kind}" data-slide-index="${start}" role="region" aria-label="${caption}"><div class="carousel-stage">${modal?image:`<button class="carousel-open" data-${kind}="${i}" aria-label="${ac.photos} · ${kind==='article'?caption:item.year}">${image}</button>`}${controls}</div><div class="carousel-caption"><span>${caption}</span><span class="carousel-status" aria-live="polite" aria-atomic="true">${start+1} / ${item.images.length}</span></div></div>`;
 }
-function moveSlide(carousel,step){
- const item=carousel.dataset.kind==='article'?eventGallery:achievements[Number(carousel.dataset.carousel)];
- const index=(Number(carousel.dataset.slideIndex)+step+item.images.length)%item.images.length;
- carousel.dataset.slideIndex=index;
- const img=carousel.querySelector('img');img.src=item.images[index].src;img.alt=localized(item.images[index].alt);
- carousel.querySelector('.carousel-status').textContent=`${index+1} / ${item.images.length}`;
+const photoCache=new Map();
+function loadPhoto(src){
+ if(!photoCache.has(src)){
+  const image=new Image();image.decoding='async';
+  const ready=new Promise((resolve,reject)=>{image.onload=()=>resolve(image);image.onerror=reject;});
+  image.src=src;
+  const promise=ready.then(async()=>{await image.decode();return image;}).catch(error=>{photoCache.delete(src);throw error;});
+  photoCache.set(src,promise);
+ }
+ return photoCache.get(src);
+}
+function carouselItem(carousel){return carousel.dataset.kind==='article'?eventGallery:achievements[Number(carousel.dataset.carousel)];}
+const preloadObserver=new IntersectionObserver(entries=>{
+ for(const entry of entries)if(entry.isIntersecting){
+  carouselItem(entry.target).images.forEach(photo=>{loadPhoto(photo.src).catch(()=>{});});
+  preloadObserver.unobserve(entry.target);
+ }
+},{rootMargin:'350px'});
+async function moveSlide(carousel,step){
+ const item=carouselItem(carousel);
+ const index=(Number(carousel.dataset.requestedIndex??carousel.dataset.slideIndex)+step+item.images.length)%item.images.length;
+ carousel.dataset.requestedIndex=index;
+ const request=String(Number(carousel.dataset.request||0)+1);carousel.dataset.request=request;
+ carousel.setAttribute('aria-busy','true');
+ try{
+  const ready=await loadPhoto(item.images[index].src);
+  if(carousel.dataset.request!==request||!carousel.isConnected)return;
+  const img=ready.cloneNode();img.alt=localized(item.images[index].alt);img.loading='eager';
+  carousel.querySelector('img').replaceWith(img);
+  carousel.dataset.slideIndex=index;
+  carousel.querySelector('.carousel-status').textContent=`${index+1} / ${item.images.length}`;
+ }catch{
+  if(carousel.dataset.request===request){
+   carousel.dataset.requestedIndex=carousel.dataset.slideIndex;
+   carousel.querySelector('.carousel-status').textContent=language==='tr'?'Yüklenemedi · Tekrar deneyin':'Could not load · Try again';
+  }
+ }finally{if(carousel.dataset.request===request)carousel.removeAttribute('aria-busy');}
 }
 function render(){
  const t=copy[language];document.documentElement.lang=language;
@@ -52,6 +83,7 @@ function render(){
  if(siteConfig.instagramUrl)$('#contact-box').insertAdjacentHTML('beforeend',`<a class="contact-social" href="${escape(safeUrl(siteConfig.instagramUrl))}" target="_blank" rel="noopener noreferrer"><span class="contact-icon">${instagramIcon}</span><span class="social-copy"><strong>${t.followUs}</strong><span>${t.followText}</span><span class="instagram-handle">@partechyperloop</span></span><span class="social-arrow" aria-hidden="true">↗</span></a>`);
  if(siteConfig.partnershipDeck)$('#contact-box').insertAdjacentHTML('beforeend',`<a class="button navy" href="${escape(safeUrl(siteConfig.partnershipDeck))}" download>${t.downloadDeck}</a>`);
  $('#year').textContent=new Date().getFullYear();
+ preloadObserver.disconnect();document.querySelectorAll('[data-carousel]').forEach(el=>preloadObserver.observe(el));
 }
 $('#language').addEventListener('click',()=>{language=language==='en'?'tr':'en';try{localStorage.setItem('partech-language',language);}catch{}dialog.close();render();});
 $('.menu-toggle').addEventListener('click',()=>{const open=$('#mega-menu').hidden;$('#mega-menu').hidden=!open;$('.menu-toggle').setAttribute('aria-expanded',String(open));});

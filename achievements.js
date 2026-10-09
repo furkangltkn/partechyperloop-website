@@ -6,7 +6,7 @@ export const achievements = [
     title: {tr: 'Performans Kategorisi İkinciliği', en: 'Second Place in the Performance Category'},
     text: {tr: 'TEKNOFEST Hyperloop Geliştirme Yarışması’nda performans kategorisinde ikincilik ve Kurul Özel Ödülü.', en: 'Second place in the performance category and the Jury Special Award at the TEKNOFEST Hyperloop Development Competition.'},
     awards: [{tr: 'Performans Kategorisi · 2.lik', en: 'Performance Category · 2nd Place'}, {tr: 'Kurul Özel Ödülü', en: 'Jury Special Award'}],
-    images: [{src:'assets/awards.jpg',alt:{tr:'2026 ödül töreninde PARTECH takımı ve ödülleri',en:'PARTECH team and awards at the 2026 ceremony'}},{src:'assets/achievements-2026-huddle.jpg',alt:{tr:'Yarışma alanında bir araya gelen PARTECH takımı',en:'PARTECH team huddle at the competition venue'}},{src:'assets/achievements-2026-tunnel.jpeg',alt:{tr:'Tünel girişinde prototip üzerinde çalışan PARTECH üyeleri',en:'PARTECH members working on the prototype at the tunnel entrance'}}]
+    images: [{src:'assets/awards-web.jpg',alt:{tr:'2026 ödül töreninde PARTECH takımı ve ödülleri',en:'PARTECH team and awards at the 2026 ceremony'}},{src:'assets/achievements-2026-huddle-web.jpg',alt:{tr:'Yarışma alanında bir araya gelen PARTECH takımı',en:'PARTECH team huddle at the competition venue'}},{src:'assets/achievements-2026-tunnel.jpeg',alt:{tr:'Tünel girişinde prototip üzerinde çalışan PARTECH üyeleri',en:'PARTECH members working on the prototype at the tunnel entrance'}}]
   },
   {
     year: 2025,
