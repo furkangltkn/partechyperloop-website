@@ -11,7 +11,8 @@ export const siteConfig = {
     {name:'SOMAL', logo:'assets/sponsors/somal.png'},
     {name:'The Lean Six Sigma Company', logo:'assets/sponsors/lean-six-sigma.png'},
     {name:'İ-Mak', logo:'assets/sponsors/i-mak.jpeg', padded:true},
-    {name:'Millî Teknoloji Atölyeleri', logo:'assets/sponsors/milli-teknoloji-atolyeleri.webp'}
+    {name:'Millî Teknoloji Atölyeleri', logo:'assets/sponsors/milli-teknoloji-atolyeleri.webp'},
+    {name:'Birikim Pilleri', logo:'assets/sponsors/birikim-pilleri.webp', padded:true}
   ],
 };
 export const copy = {

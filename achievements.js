@@ -11,9 +11,9 @@ export const achievements = [
   {
     year: 2025,
     title: {tr: 'Raporlarda Türkiye 1.liği', en: 'First Place in Türkiye in Report Evaluations'},
-    text: {tr: '2025 TEKNOFEST Hyperloop Geliştirme Yarışması’nda rapor değerlendirmelerinde Türkiye 1.liğini elde ettik ve finallerde yer aldık.', en: 'In the 2025 TEKNOFEST Hyperloop Development Competition, our team ranked first in Türkiye in report evaluations and took part in the finals.'},
-    awards: [{tr: 'Rapor Değerlendirmesi · Türkiye 1.liği', en: 'Report Evaluations · 1st in Türkiye'}, {tr: 'Finalist', en: 'Finalist'}],
-    images: [{src:'assets/achievements-2025-team.jpeg',alt:{tr:'2025 Hyperloop yarışması alanında PARTECH takımı ve aracı',en:'PARTECH team and pod at the 2025 Hyperloop competition venue'}}]
+    text: {tr: '2025 TEKNOFEST Hyperloop Geliştirme Yarışması’nda rapor değerlendirmelerinde Türkiye 1.liğini elde ettik, Sosyo Ekonomik Etki Ödülü’nü kazandık ve finallerde yer aldık.', en: 'In the 2025 TEKNOFEST Hyperloop Development Competition, our team ranked first in Türkiye in report evaluations, received the Socioeconomic Impact Award and took part in the finals.'},
+    awards: [{tr: 'Rapor Değerlendirmesi · Türkiye 1.liği', en: 'Report Evaluations · 1st in Türkiye'}, {tr: 'Sosyo Ekonomik Etki Ödülü', en: 'Socioeconomic Impact Award'}, {tr: 'Finalist', en: 'Finalist'}],
+    images: [{src:'assets/achievements-2025-team.jpeg',alt:{tr:'2025 Hyperloop yarışması alanında PARTECH takımı ve aracı',en:'PARTECH team and pod at the 2025 Hyperloop competition venue'}},{src:'assets/achievements-2025-impact.jpeg',alt:{tr:'2025 Sosyo Ekonomik Etki Ödülü töreninde PARTECH takımı',en:'PARTECH team at the 2025 Socioeconomic Impact Award ceremony'}}]
   },
   {
     year: 2024,
