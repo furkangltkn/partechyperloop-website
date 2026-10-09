@@ -9,6 +9,25 @@ const safeUrl = value => {try {const u = new URL(value,location.href);return ['h
 const sections=['home','about','technology','achievements','partners','news'];
 const dialog = $('#detail-dialog');
 function closeMenu(){ $('#mega-menu').hidden=true;$('.menu-toggle').setAttribute('aria-expanded','false'); }
+const eventGallery={images:[
+ {src:'assets/event.jpg',alt:{tr:'PARTECH standında prototip üzerine yapılan görüşmeler',en:'Conversations about the prototype at the PARTECH stand'}},
+ {src:'assets/event-team-2026.jpg',alt:{tr:'PARTECH standı önünde takımımız ve ziyaretçiler',en:'Our team and visitors in front of the PARTECH stand'}}
+]};
+function carouselMarkup(item,i,modal=false,start=0,kind='achievement'){
+ const ac=achievementCopy[language], img=item.images[start];
+ const caption=kind==='article'?(language==='tr'?'Etkinlik Fotoğrafları':'Event Photos'):`${ac.gallery} / ${item.year}`;
+ const previous=language==='tr'?'Önceki fotoğraf':'Previous photo', next=language==='tr'?'Sonraki fotoğraf':'Next photo';
+ const controls=item.images.length>1?`<button class="carousel-arrow previous" data-slide="-1" aria-label="${previous}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><button class="carousel-arrow next" data-slide="1" aria-label="${next}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>`:'';
+ const image=`<img src="${img.src}" alt="${escape(localized(img.alt))}" loading="${modal?'eager':'lazy'}">`;
+ return `<div class="photo-carousel ${modal?'modal-carousel':''}" data-carousel="${i}" data-kind="${kind}" data-slide-index="${start}" role="region" aria-label="${caption}"><div class="carousel-stage">${modal?image:`<button class="carousel-open" data-${kind}="${i}" aria-label="${ac.photos} · ${kind==='article'?caption:item.year}">${image}</button>`}${controls}</div><div class="carousel-caption"><span>${caption}</span><span class="carousel-status" aria-live="polite" aria-atomic="true">${start+1} / ${item.images.length}</span></div></div>`;
+}
+function moveSlide(carousel,step){
+ const item=carousel.dataset.kind==='article'?eventGallery:achievements[Number(carousel.dataset.carousel)];
+ const index=(Number(carousel.dataset.slideIndex)+step+item.images.length)%item.images.length;
+ carousel.dataset.slideIndex=index;
+ const img=carousel.querySelector('img');img.src=item.images[index].src;img.alt=localized(item.images[index].alt);
+ carousel.querySelector('.carousel-status').textContent=`${index+1} / ${item.images.length}`;
+}
 function render(){
  const t=copy[language];document.documentElement.lang=language;
  document.title=language==='en'?'PARTECH Hyperloop — Engineering the Future of Mobility':'PARTECH Hyperloop — Ulaşımın Geleceğini Tasarlıyoruz';
@@ -22,8 +41,8 @@ function render(){
  $('#disciplines').innerHTML=t.disciplines.map(([title,text])=>`<article class="discipline"><h3>${title}</h3><p>${text}</p></article>`).join('');
  const ac=achievementCopy[language];
  $('#achievement-summary').innerHTML=`<strong>${ac.since}</strong><span>${ac.finals}</span>`;
- $('#milestones').innerHTML=achievements.map((item,i)=>`<li class="achievement-row ${item.images.length?'':'text-only'}"><div class="achievement-year"><time datetime="${item.year}">${item.year}</time></div><article class="achievement-entry"><div class="achievement-copy"><p class="eyebrow">${ac.event}</p><h3>${escape(localized(item.title))}</h3><p>${escape(localized(item.text))}</p><ul class="award-tags">${item.awards.map(a=>`<li>${escape(localized(a))}</li>`).join('')}</ul>${item.images.length?`<button class="text-link" data-achievement="${i}">${ac.photos}<span class="photo-count">${String(item.images.length).padStart(2,'0')}</span><span class="sr-only"> · ${item.year}</span></button>`:''}</div>${item.images.length?`<button class="achievement-photo" data-achievement="${i}" aria-label="${ac.photos} · ${item.year}"><img src="${item.images[0].src}" alt="${escape(localized(item.images[0].alt))}" width="1600" height="1200" loading="lazy"><span>${ac.gallery} / ${item.year}</span></button>`:''}</article></li>`).join('');
- $('#news-list').innerHTML=t.articles.map(([img,label,title,text],i)=>`<article class="card"><img src="${img}" alt="${escape(title)}" loading="lazy" width="640" height="420"><div class="card-content"><p class="eyebrow">${label}</p><h3>${title}</h3><p>${text}</p><button class="text-link" data-article="${i}">${t.readMore}<span class="sr-only">: ${title}</span></button></div></article>`).join('');
+ $('#milestones').innerHTML=achievements.map((item,i)=>`<li class="achievement-row ${item.images.length?'':'text-only'}"><div class="achievement-year"><time datetime="${item.year}">${item.year}</time></div><article class="achievement-entry"><div class="achievement-copy"><p class="eyebrow">${ac.event}</p><h3>${escape(localized(item.title))}</h3><p>${escape(localized(item.text))}</p><ul class="award-tags">${item.awards.map(a=>`<li>${escape(localized(a))}</li>`).join('')}</ul>${item.images.length?`<button class="text-link" data-achievement="${i}">${ac.photos}<span class="photo-count">${String(item.images.length).padStart(2,'0')}</span><span class="sr-only"> · ${item.year}</span></button>`:''}</div>${item.images.length?carouselMarkup(item,i):''}</article></li>`).join('');
+ $('#news-list').innerHTML=t.articles.map(([img,label,title,text],i)=>`<article class="card">${i===0?carouselMarkup(eventGallery,i,false,0,'article'):`<img src="${img}" alt="${escape(title)}" loading="lazy" width="640" height="420">`}<div class="card-content"><p class="eyebrow">${label}</p><h3>${title}</h3><p>${text}</p><button class="text-link" data-article="${i}">${t.readMore}<span class="sr-only">: ${title}</span></button></div></article>`).join('');
  const sponsorLogo=p=>`<li class="sponsor-logo${p.padded?' sponsor-padded':''}"><img src="${escape(safeUrl(p.logo))}" alt="${escape(p.name)}" loading="lazy" decoding="async"></li>`;
  $('#partner-list').innerHTML=`<ul class="sponsors-featured">${siteConfig.partners.filter(p=>p.featured).map(sponsorLogo).join('')}</ul><ul class="sponsors-grid">${siteConfig.partners.filter(p=>!p.featured).map(sponsorLogo).join('')}</ul>`;
  const email=siteConfig.contactEmail.trim();
@@ -36,7 +55,7 @@ function render(){
 }
 $('#language').addEventListener('click',()=>{language=language==='en'?'tr':'en';try{localStorage.setItem('partech-language',language);}catch{}dialog.close();render();});
 $('.menu-toggle').addEventListener('click',()=>{const open=$('#mega-menu').hidden;$('#mega-menu').hidden=!open;$('.menu-toggle').setAttribute('aria-expanded',String(open));});
-document.addEventListener('click',e=>{if(e.target.closest('#mega-menu a'))closeMenu();if(!e.target.closest('.header'))closeMenu();const button=e.target.closest('[data-article]');if(button){const [img,label,title,intro,body]=copy[language].articles[Number(button.dataset.article)];dialog.classList.remove('gallery-dialog');$('#dialog-content').innerHTML=`<img src="${img}" alt="${escape(title)}"><p class="eyebrow">${label}</p><h2 id="dialog-title">${title}</h2><p>${intro}</p><p>${body}</p>`;dialog.showModal();}});
+document.addEventListener('click',e=>{if(e.target.closest('#mega-menu a'))closeMenu();if(!e.target.closest('.header'))closeMenu();const button=e.target.closest('[data-article]');if(button){const i=Number(button.dataset.article);const [img,label,title,intro,body]=copy[language].articles[i];const start=Number(button.closest('.card')?.querySelector('[data-carousel]')?.dataset.slideIndex||0);dialog.classList.toggle('gallery-dialog',i===0);$('#dialog-content').innerHTML=`<p class="eyebrow">${label}</p><h2 id="dialog-title">${title}</h2>${i===0?carouselMarkup(eventGallery,i,true,start,'article'):`<img src="${img}" alt="${escape(title)}">`}<p>${intro}</p><p>${body}</p>`;dialog.showModal();}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape' && !$('#mega-menu').hidden){closeMenu();$('.menu-toggle').focus();}});
 $('.dialog-close').addEventListener('click',()=>dialog.close());
 dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
@@ -44,13 +63,22 @@ render();
 const observer=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting){document.querySelectorAll('.desktop-nav a').forEach(a=>{const active=a.hash==='#'+entry.target.id;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');});}},{rootMargin:'-15% 0px -65% 0px',threshold:0});
 sections.forEach(id=>observer.observe(document.getElementById(id)));
 
-// Native dialog provides focus trapping and Escape-to-close for the photo archive.
+// Native dialog keeps focus inside the gallery and supports Escape to close.
 document.addEventListener('click',e=>{
+ const arrow=e.target.closest('[data-slide]');
+ if(arrow){moveSlide(arrow.closest('[data-carousel]'),Number(arrow.dataset.slide));return;}
  const button=e.target.closest('[data-achievement]');
  if(!button)return;
- const item=achievements[Number(button.dataset.achievement)];
+ const i=Number(button.dataset.achievement), item=achievements[i];
+ const carousel=button.closest('.achievement-entry').querySelector('[data-carousel]');
+ const start=Number(carousel?.dataset.slideIndex||0);
  const ac=achievementCopy[language];
  dialog.classList.add('gallery-dialog');
- $('#dialog-content').innerHTML=`<p class="eyebrow">${item.year} · ${ac.gallery}</p><h2 id="dialog-title">${escape(localized(item.title))}</h2><div class="achievement-gallery">${item.images.map((img,i)=>`<figure><img src="${img.src}" alt="${escape(localized(img.alt))}" width="1600" height="1200"><figcaption>${ac.photo} ${i+1} / ${item.images.length} · ${escape(localized(img.alt))}</figcaption></figure>`).join('')}</div>`;
+ $('#dialog-content').innerHTML=`<p class="eyebrow">${item.year} · ${ac.gallery}</p><h2 id="dialog-title">${escape(localized(item.title))}</h2>${carouselMarkup(item,i,true,start)}`;
  dialog.showModal();
+});
+document.addEventListener('keydown',e=>{
+ if(!['ArrowLeft','ArrowRight'].includes(e.key))return;
+ const carousel=dialog.open&&dialog.classList.contains('gallery-dialog')?dialog.querySelector('[data-carousel]'):e.target.closest('[data-carousel]');
+ if(carousel){e.preventDefault();moveSlide(carousel,e.key==='ArrowLeft'?-1:1);}
 });
