@@ -3,5 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "scripts": {"dev": "node server.mjs", "start": "node server.mjs", "check": "node --check app.js && node --check content.js && node --check achievements.js && node --check server.mjs"}
+  "scripts": {
+    "dev": "node server.mjs",
+    "start": "node server.mjs",
+    "check": "node --check app.js && node --check content.js && node --check achievements.js && node --check server.mjs && node --check build.mjs",
+    "build": "node build.mjs"
+  }
 }

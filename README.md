@@ -30,13 +30,16 @@ Tek sayfa: açılış, teknoloji, hakkımızda, başarılar, sponsorlar, ekip, h
 
 Stitch'in ürettiği doğrulanmamış performans sayıları, EHW sonuçları, alıntılar ve sponsor katkıları gerçek bilgi olarak aktarılmadı. Fotoğraflardaki etkinlikler üzerinden genel tanıtım metinleri kullanıldı; yayın öncesi takım tarafından içerik kontrolü yapılmalıdır.
 
-## Yayın öncesi
+## Yayın ve Google görünürlüğü
 
-1. İletişim e-postasını, sponsor verilerini ve varsa PDF dosyasını ekleyin.
-2. Metinleri, mühendislik disiplinlerini ve görsel açıklamalarını takım ile doğrulayın.
-3. `index.html` içindeki `noindex,nofollow` etiketini yayın kararıyla kaldırın.
-4. Onaylanan domain ve hosting bağlantısını yapın. Henüz yayın yapılmadı.
-5. Yalnızca index.html, styles.css, app.js, content.js, achievements.js ve assets/ dizinini statik hosting'e yükleyin; reference/ klasörünü yayınlamayın.
+Canlı alan adı: https://partechyperloop.com/ (Netlify).
+
+`npm run build` yalnızca yayın dosyalarını `dist/` klasörüne hazırlar; `reference/` yayınlanmaz. Varsayılan İngilizce metinler HTML'e eklenir; tarayıcıdaki Türkçe/İngilizce dil seçimi korunur. Netlify ayarları `netlify.toml` içindedir.
+
+- Sayfa indekslemeye açıktır; canonical adresi ana alan adıdır.
+- `robots.txt`, `sitemap.xml` adresini bildirir. Tek sayfa olduğu için bölüm bağlantıları ayrı URL olarak listelenmez.
+- Yayından sonra Google Search Console'a alan adını ekleyin. TXT doğrulama kaydını Netlify DNS'e girin, `sitemap.xml` dosyasını gönderin ve ana sayfa için URL Denetimi üzerinden dizine ekleme isteyin.
+- Bu ayarlar indeksleme engelini kaldırır; Google'da görünme zamanı veya sıralama garantisi vermez.
 
 ## Kontrol
 
